@@ -9,7 +9,6 @@ import entity.Author;
 import entity.Book;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -25,6 +24,8 @@ import session.BookFacade;
  * @author Melnikov
  */
 @WebServlet(name = "ManagerServlet", urlPatterns = {
+    "/index",
+    "/listBooks",
     "/addBook", 
     "/createBook"
 })
@@ -46,6 +47,15 @@ public class ManagerServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String path = request.getServletPath();
         switch (path) {
+            case "/index":
+                request.getRequestDispatcher("/listBooks").forward(request, response);
+                break;
+            case "/listBooks":
+                request.setAttribute("info", "Показываем форму");
+                List<Book> books = bookFacade.findAll();
+                request.setAttribute("books", books);
+                request.getRequestDispatcher("/listBooks.jsp").forward(request, response);
+                break;
             case "/addBook":
                 request.setAttribute("info", "Показываем форму");
                 List<Author> authors = authorFacade.findAll();

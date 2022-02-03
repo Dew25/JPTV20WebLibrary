@@ -27,7 +27,9 @@ import session.BookFacade;
     "/index",
     "/listBooks",
     "/addBook", 
-    "/createBook"
+    "/createBook",
+    "/addAuthor",
+    "/createAuthor"
 })
 public class ManagerServlet extends HttpServlet {
     @EJB private AuthorFacade authorFacade;
@@ -77,11 +79,29 @@ public class ManagerServlet extends HttpServlet {
                 newBook.setPublishedYear(Integer.parseInt(publishedYear));
                 newBook.setQuantity(Integer.parseInt(quantity));
                 newBook.setCount(newBook.getQuantity());
-                bookFacade.create(newBook);
-                request.setAttribute("info", "Добавили книгу в базу");
+                try {
+                    bookFacade.create(newBook);
+                    request.setAttribute("info", "Успешно добавили книгу в базу");
+                } catch (Exception e) {
+                    request.setAttribute("info", "Добавить книгу не удалось");
+                }
                 request.getRequestDispatcher("/addBook").forward(request, response);
                 break;
-            
+            case "/addAuthor":
+                request.getRequestDispatcher("/WEB-INF/addAuthor.jsp").forward(request, response);
+                break;
+            case "/createAuthor":
+                String firstname = request.getParameter("firstname");
+                String lastname = request.getParameter("lastname");
+                String birthYear = request.getParameter("birthYear");
+                Author author = new Author();
+                author.setBirthYear(Integer.parseInt(birthYear));
+                author.setFirstname(firstname);
+                author.setLastname(lastname);
+                authorFacade.create(author);
+                request.setAttribute("info", "Автор успешно добавлен");
+                request.getRequestDispatcher("/addAuthor").forward(request, response);
+                break;
         }
     }
 

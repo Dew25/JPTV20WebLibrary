@@ -20,7 +20,7 @@
                     <input type="text" class="form-control" name="birthYear" id="birthYear" aria-describedby="">
                     <div id="birthYear" hidden class="form-text  text-danger">error!</div>
                 </div>
-                <input type="submit" name="Добавить" class="btn btn-primary mb-3">
+                <input type="submit" name="Добавить" class="btn btn-success mb-3">
             </form>
         </div>
     </div>

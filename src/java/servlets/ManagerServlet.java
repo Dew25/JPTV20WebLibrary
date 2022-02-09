@@ -9,6 +9,7 @@ import entity.Author;
 import entity.Book;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -28,6 +29,9 @@ import session.BookFacade;
     "/listBooks",
     "/addBook", 
     "/createBook",
+    "/editListBooks",
+    "/editBook",
+    "/updateBook",
     "/addAuthor",
     "/createAuthor"
 })
@@ -62,16 +66,17 @@ public class ManagerServlet extends HttpServlet {
                 request.setAttribute("info", "Показываем форму");
                 List<Author> authors = authorFacade.findAll();
                 request.setAttribute("authors", authors);
+                request.setAttribute("activeAddBook", true);
                 request.getRequestDispatcher("/WEB-INF/addBook.jsp").forward(request, response);
                 break;
             case "/createBook":
                 String bookName = request.getParameter("bookName");
                 String publishedYear = request.getParameter("publishedYear");
                 String quantity = request.getParameter("quantity");
-                String[] bAuthors = request.getParameterValues("authors");
+                String[] bookAuthorsArray = request.getParameterValues("authors");
                 List<Author> bookAuthors = new ArrayList<>();
-                for (int i = 0; i < bAuthors.length; i++) {
-                    bookAuthors.add(authorFacade.find(Long.parseLong(bAuthors[i])));
+                for (int i = 0; i < bookAuthorsArray.length; i++) {
+                    bookAuthors.add(authorFacade.find(Long.parseLong(bookAuthorsArray[i])));
                 }
                 Book newBook = new Book();
                 newBook.setBookName(bookName);
@@ -87,7 +92,40 @@ public class ManagerServlet extends HttpServlet {
                 }
                 request.getRequestDispatcher("/addBook").forward(request, response);
                 break;
+            case "/editListBooks":
+                request.setAttribute("activeEditListBooks", true);
+                List<Book>listBooks = bookFacade.findAll();
+                request.setAttribute("books", listBooks);
+                request.getRequestDispatcher("/WEB-INF/editListBooks.jsp").forward(request, response);
+                break;
+            case "/editBook":
+                request.setAttribute("activeEditListBooks", true);
+                String bookId = request.getParameter("bookId");
+                Book book = bookFacade.find(Long.parseLong(bookId));
+                request.setAttribute("book", book);
+                request.getRequestDispatcher("/WEB-INF/editBook.jsp").forward(request, response);
+                break;
+            case "/updateBook":
+                bookId = request.getParameter("bookId");
+                bookName = request.getParameter("bookName");
+                authors = new ArrayList<>();
+                String[] newBookAuthorsArray = request.getParameterValues("authors");
+                for (int i = 0; i < newBookAuthorsArray.length; i++) {
+                    authors.add(authorFacade.find(Long.parseLong(newBookAuthorsArray[i])));
+                }
+                publishedYear = request.getParameter("publishedYear");
+                quantity = request.getParameter("quantity");
+                Book updateBook = bookFacade.find(Long.parseLong(bookId));
+                updateBook.setBookName(bookName);
+                updateBook.setQuantity(Integer.parseInt(quantity));
+                updateBook.setPublishedYear(Integer.parseInt(publishedYear));
+                updateBook.setAuthor(authors);
+                bookFacade.edit(updateBook);
+                request.setAttribute("info", "Книга изменена");
+                request.getRequestDispatcher("/editListBooks").forward(request, response);
+                break;
             case "/addAuthor":
+                request.setAttribute("activeAddAuthor", true);
                 request.getRequestDispatcher("/WEB-INF/addAuthor.jsp").forward(request, response);
                 break;
             case "/createAuthor":

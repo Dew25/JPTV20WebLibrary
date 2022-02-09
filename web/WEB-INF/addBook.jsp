@@ -29,7 +29,7 @@
                     <div id="quantity" hidden class="form-text">We'll never share your email with anyone else.</div>
                 </div>
 
-                <input type="submit" name="Добавить" class="btn btn-primary mb-3">
+                <input type="submit" name="Добавить" class="btn btn-success mb-3">
             </form>
         </div>
     </div>

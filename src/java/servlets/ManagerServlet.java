@@ -10,7 +10,9 @@ import entity.Book;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -101,7 +103,17 @@ public class ManagerServlet extends HttpServlet {
             case "/editBook":
                 request.setAttribute("activeEditListBooks", true);
                 String bookId = request.getParameter("bookId");
+                Map<Author,Boolean> mapAuthors = new HashMap<>();
+                List<Author>listAuthors = authorFacade.findAll();
                 Book book = bookFacade.find(Long.parseLong(bookId));
+                for (int i = 0; i < listAuthors.size(); i++) {
+                    if(book.getAuthor().contains(listAuthors.get(i))){
+                        mapAuthors.put(listAuthors.get(i), Boolean.TRUE);
+                    }else{
+                        mapAuthors.put(listAuthors.get(i), Boolean.FALSE);
+                    }
+                }
+                request.setAttribute("mapAuthors", mapAuthors);
                 request.setAttribute("book", book);
                 request.getRequestDispatcher("/WEB-INF/editBook.jsp").forward(request, response);
                 break;
@@ -115,6 +127,13 @@ public class ManagerServlet extends HttpServlet {
                 }
                 publishedYear = request.getParameter("publishedYear");
                 quantity = request.getParameter("quantity");
+                if(bookId.isEmpty() || bookName.isEmpty() || newBookAuthorsArray.length == 0
+                        || publishedYear.isEmpty() || quantity.isEmpty()){
+                    request.setAttribute("info", "Заполните все поля и сделайте выбор авторов");
+                    request.setAttribute("bookId", bookId);
+                    request.getRequestDispatcher("/editBook").forward(request, response);
+                    break;
+                }
                 Book updateBook = bookFacade.find(Long.parseLong(bookId));
                 updateBook.setBookName(bookName);
                 updateBook.setQuantity(Integer.parseInt(quantity));

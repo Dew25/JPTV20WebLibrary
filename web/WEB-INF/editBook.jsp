@@ -21,8 +21,12 @@
                 <div class="mb-3">
                     <label for="authors" class="form-label">Авторы</label>
                     <select name="authors"  id="authors" multiple class="form-select" aria-label="Default select example">
-                        <c:forEach var="author" items="${book.author}">
-                            <option value="${author.id}">${author.firstname} ${author.lastname}</option>
+                        <c:forEach var="entry" items="${mapAuthors}">
+                            <option value="${entry.key.id}" 
+                                <c:if test="${entry.value}">
+                                    selected
+                                </c:if>
+                            >${entry.key.firstname} ${entry.key.lastname}</option>
                         </c:forEach>
                     </select>
                 </div>
